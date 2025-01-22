@@ -15,6 +15,11 @@ export class UserController {
         return this.user_service.get_one_user_by_id(id)
     }
 
+    @HttpCode(HttpStatus.OK)
+    @Get('get_all')
+    get_all() {
+        return this.user_service.get_all_users()
+    }
 
     @HttpCode(HttpStatus.OK)
     @Get('get_one_by_email')

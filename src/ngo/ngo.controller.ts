@@ -13,7 +13,7 @@ export class NgoController {
 
     @HttpCode(HttpStatus.OK)
     @Post('create')
-    create_ngo(@Body() ngo: CreateNgoDto) {
+    create_ngo(@Body() ngo:any) {
         return this.ngo_service.create_s(ngo)
     }
 

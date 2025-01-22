@@ -36,7 +36,7 @@ export class DonationService {
     async get_all_donations(page_no: number) {
         try {
             const skip = (page_no - 1) * DEFAULT_DOCUMENTS_LIMIT;
-            const donations = await this.donation_model.find({}).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            const donations = await this.donation_model.find({}).populate(["user", "selected_ngo"]).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
             const total =  await this.donation_model.countDocuments({}).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
             return {donations, total}
         } catch (e) {

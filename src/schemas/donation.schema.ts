@@ -6,8 +6,8 @@ import { NGO } from './ngo/ngo.schema';
 export type DonationDocument = HydratedDocument<Donation>;
 
 export enum DONATION_TYPE{
-    DISPOSE_CLOTHE="donation",
-    DONATE_CLOTHES="donate"
+    DISPOSE_CLOTHE="disposal",
+    DONATE_CLOTHES="donation"
 }
 
 export enum DONATION_STATUS{

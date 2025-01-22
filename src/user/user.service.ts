@@ -3,37 +3,38 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/schemas/user_panel/user.schema';
 import {
-  CreateUserDto,
-  UpdateUserDtoDB,
+    CreateUserDto,
+    UpdateUserDtoDB,
 } from 'src/auth/dtos/requestDtos/signup.dto';
+import { DEFAULT_DOCUMENTS_LIMIT } from 'src/constants';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private user_model: Model<User>) {}
+    constructor(@InjectModel(User.name) private user_model: Model<User>) { }
 
-  async create(dto: CreateUserDto) {
-    const created_user = new this.user_model(dto);
-    return created_user.save();
-  }
+    async create(dto: CreateUserDto) {
+        const created_user = new this.user_model(dto);
+        return created_user.save();
+    }
 
-  async get_all_users() {
-    return this.user_model.find().exec();
-  }
+    async get_all_users() {
+        return this.user_model.find().exec();
+    }
 
-  async get_one_user_by_email(email: string) {
-    return this.user_model.findOne({ email }).exec();
-  }
+    async get_one_user_by_email(email: string) {
+        return this.user_model.findOne({ email }).exec();
+    }
 
-  async get_one_user_by_id(id: string) {
-    return this.user_model.findOne({ _id: new Types.ObjectId(id)}).exec();
-  }
+    async get_one_user_by_id(id: string) {
+        return this.user_model.findOne({ _id: new Types.ObjectId(id) }).exec();
+    }
 
-  async update_one_by_email(email: string, dto: UpdateUserDtoDB) {
-    return this.user_model.updateOne({ email }, dto).exec();
-  }
+    async update_one_by_email(email: string, dto: UpdateUserDtoDB) {
+        return this.user_model.updateOne({ email }, dto).exec();
+    }
 
-  async delete_one_by_email(email: string) {
-    return this.user_model.deleteOne({ email }).exec();
-  }
+    async delete_one_by_email(email: string) {
+        return this.user_model.deleteOne({ email }).exec();
+    }
 
 }
