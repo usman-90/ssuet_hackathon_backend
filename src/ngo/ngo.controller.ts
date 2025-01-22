@@ -40,8 +40,8 @@ export class NgoController {
 
     @HttpCode(HttpStatus.OK)
     @Get('get_all')
-    get_all_ngos(@Query("page_no") page_no: number, @Query() q?: UpdateNGODtoClient) {
-        return this.ngo_service.get_all_ngos(page_no, q)
+    get_all_ngos(@Query("page_no") page_no: number) {
+        return this.ngo_service.get_all_ngos(page_no)
     }
 
     @HttpCode(HttpStatus.OK)

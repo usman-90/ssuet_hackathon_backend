@@ -46,11 +46,11 @@ export class NgoService {
     }
 
 
-    async get_all_ngos(page_no: number, dto?: UpdateNGODtoClient) {
+    async get_all_ngos(page_no: number) {
         try {
             const skip = (page_no - 1) * DEFAULT_DOCUMENTS_LIMIT;
-            const total = await this.ngo_model.countDocuments({ dto }).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
-            const ngos = await this.ngo_model.find({ dto }).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            const total = await this.ngo_model.countDocuments({ }).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            const ngos = await this.ngo_model.find({ }).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
             return { total, ngos }
         } catch (e) {
             console.log(e)
