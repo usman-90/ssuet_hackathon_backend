@@ -30,12 +30,6 @@ export class Donation {
     @Prop({ required: true })
     address: string | Coordinates
 
-    @Prop({ required: true })
-    donation_mechanism: string
-
-    @Prop({ required: true })
-    donation_mechanism_type: string
-
     @Prop({required: true})
     donation_items : DonationItems
 
@@ -43,11 +37,10 @@ export class Donation {
     pickup_date:Date
 
     @Prop({required: true})
-    pickup_time:string
+    pickup_time_slot:string
 
     @Prop({required: true})
     pickup_notes:string
-
 
     @Prop({required: true})
     promo_code:string
