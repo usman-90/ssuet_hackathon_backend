@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from 'src/schemas/user_panel/user.schema';
@@ -24,7 +24,16 @@ export class UserService {
     return this.user_model.findOne({ email }).exec();
   }
 
+  async get_one_user_by_id(id: string) {
+    return this.user_model.findOne({ _id: new Types.ObjectId(id)}).exec();
+  }
+
   async update_one_by_email(email: string, dto: UpdateUserDtoDB) {
     return this.user_model.updateOne({ email }, dto).exec();
   }
+
+  async delete_one_by_email(email: string) {
+    return this.user_model.deleteOne({ email }).exec();
+  }
+
 }
