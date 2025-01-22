@@ -42,3 +42,22 @@ export class UpdateUserDtoDB extends PartialType(CreateUserDto) {
   @IsOptional()
   is_email_verified?: boolean;
 }
+
+
+export class CreateAdminDto{
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  password: string;
+}
+
+export class UpdateAdminDtoClient extends PartialType(
+  OmitType(CreateAdminDto, ['password'] as const),
+) {}
+

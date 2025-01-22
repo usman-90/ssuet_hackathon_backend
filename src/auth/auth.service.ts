@@ -5,7 +5,7 @@ import {
     UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from './dtos/requestDtos/signup.dto';
+import { CreateAdminDto, CreateUserDto } from './dtos/requestDtos/signup.dto';
 import { comparePassword, hashPassword } from 'src/utils/data.encryption';
 import { UserResponseDto } from './dtos/responseDtos/userResponse.dto';
 import { GetOtpResponseDto } from './dtos/responseDtos/getOtpResponse.dto';
@@ -22,10 +22,11 @@ import { SignUpResponseDto } from './dtos/responseDtos/signupResponse.dto';
 import { VerifyEmailByOtpResponse } from './dtos/responseDtos/verifyOtpResponse.dto';
 import { EmailVerificationStatus, OtpStatus } from './auth.enums';
 import { SuccessResDto } from 'src/commons/dtos/response_dtos/success.dto';
-import { UserPayload } from './interfaces/user_payload.interface';
+import { AdminPaylaod, UserPayload } from './interfaces/user_payload.interface';
 import { UserService } from 'src/user/user.service';
 import { ResetPasswordPayload } from './types/reset_password.types';
 import { RedisConnector } from 'src/database/redisConnector.database';
+import { AdminService } from 'src/admin/admin.service';
 
 @Injectable()
 export class AuthService {
@@ -33,6 +34,7 @@ export class AuthService {
         private user_service: UserService,
         private jwtService: JwtService,
         private notificationService: NotificationsService,
+        private admin_service: AdminService,
     ) { }
 
     async userSignUp(signUpDto: CreateUserDto): Promise<SignUpResponseDto> {
@@ -279,4 +281,77 @@ export class AuthService {
             throw new InternalServerErrorException(e);
         }
     }
+
+
+
+
+
+    async admin_signup(signUpDto: CreateAdminDto) {
+        try {
+            const isEmailAvailable = (await this.admin_service.get_one_admin_by_email(
+                signUpDto.email,
+            ))
+                ? false
+                : true;
+
+            if (!isEmailAvailable) {
+                throw new BadRequestException('User with this email already exists.');
+            }
+
+            signUpDto.password = await hashPassword(signUpDto.password);
+
+            const user = await this.admin_service.create(signUpDto);
+
+            if (!user) {
+                throw new BadRequestException(['Could not create user!']);
+            }
+
+            const payload: AdminPaylaod = {
+                id: user._id.toString(),
+                email: user.email,
+            };
+            const token = await this.jwtService.signAsync(payload, {
+                secret: process.env.JWT_SECRET
+            });
+
+            return new UserResponseDto({ token, user });
+        } catch (e) {
+            console.log(e)
+            throw new InternalServerErrorException(e);
+        }
+    }
+
+    async admin_signin(email: string, pass: string) {
+        try {
+            const user = await this.admin_service.get_one_admin_by_email(email);
+
+            if (!user) {
+                throw new BadRequestException('Incorrect email or password');
+            }
+
+            const isPasswordValid = await comparePassword(pass, user.password);
+
+            if (!isPasswordValid) {
+                throw new BadRequestException('Incorrect email or password');
+            }
+
+            const payload: AdminPaylaod = {
+                id: user._id.toString(),
+                email: user.email,
+            };
+
+            const token = await this.jwtService.signAsync(payload, {
+                secret: process.env.JWT_SECRET,
+            });
+
+            return new UserResponseDto({ token, user });
+        } catch (e) {
+            throw new InternalServerErrorException(e);
+        }
+    }
+
+
+
+
+
 }

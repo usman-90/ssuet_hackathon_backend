@@ -3,3 +3,8 @@ export interface UserPayload {
   email: string;
   is_email_verified: boolean
 }
+
+export interface AdminPaylaod {
+  id: string;
+  email: string;
+}

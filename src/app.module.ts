@@ -17,6 +17,7 @@ import { NgoModule } from './ngo/ngo.module';
 import { NgoService } from './ngo/ngo.service';
 import { NGO, NGOSchema } from './schemas/ngo/ngo.schema';
 import { DonationModule } from './donation/donation.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
     imports: [
@@ -41,6 +42,7 @@ import { DonationModule } from './donation/donation.module';
         UserModule,
         NgoModule,
         DonationModule,
+        AdminModule,
     ],
     controllers: [AppController, AuthController, NgoController],
     providers: [
