@@ -13,34 +13,34 @@ export class NgoController {
     constructor(private ngo_service: NgoService) { }
 
     @HttpCode(HttpStatus.OK)
-    @Post('ngo/create')
+    @Post('create')
     create_ngo(@Body() ngo: CreateNgoDto) {
         return this.ngo_service.create_s(ngo)
     }
 
     @HttpCode(HttpStatus.OK)
-    @Post('ngo/update')
+    @Post('update')
     update_ngo(@Body() ngo: UpdateNGODtoClient, @Query("id") id: string) {
         if (!isMongoId(id)) throw new BadRequestException("invalid mongo id")
         return this.ngo_service.update(ngo, new Types.ObjectId(id))
     }
 
     @HttpCode(HttpStatus.OK)
-    @Delete('ngo/delete')
+    @Delete('delete')
     delete_ngo(@Query("id") id: string) {
         if (!isMongoId(id)) throw new BadRequestException("invalid mongo id")
         return this.ngo_service.delete_ngo_by_id(new Types.ObjectId(id))
     }
 
     @HttpCode(HttpStatus.OK)
-    @Get('ngo/get_one_by_id')
+    @Get('get_one_by_id')
     get_ngo_by_id(@Query("id") id: string) {
         if (!isMongoId(id)) throw new BadRequestException("invalid mongo id")
         return this.ngo_service.get_ngo_by_id(id)
     }
 
     @HttpCode(HttpStatus.OK)
-    @Get('ngo/get_all')
+    @Get('get_all')
     get_all_ngos(@Query("page_no") page_no: number, @Query() q?: UpdateNGODtoClient) {
         return this.ngo_service.get_all_ngos(page_no, q)
     }
