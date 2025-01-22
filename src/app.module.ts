@@ -18,6 +18,8 @@ import { NgoService } from './ngo/ngo.service';
 import { NGO, NGOSchema } from './schemas/ngo/ngo.schema';
 import { DonationModule } from './donation/donation.module';
 import { AdminModule } from './admin/admin.module';
+import { AdminService } from './admin/admin.service';
+import { Admin, AdminSchema } from './schemas/admin.schema';
 
 @Module({
     imports: [
@@ -37,6 +39,7 @@ import { AdminModule } from './admin/admin.module';
         ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
         MongooseModule.forFeature([{ name: NGO.name, schema: NGOSchema }]),
+        MongooseModule.forFeature([{ name: Admin.name, schema: AdminSchema}]),
         AuthModule,
         NotificationsModule,
         UserModule,
@@ -51,7 +54,8 @@ import { AdminModule } from './admin/admin.module';
         AuthService,
         UserService,
         JwtService,
-        NgoService
+        NgoService,
+        AdminService
     ],
 })
 export class AppModule { }
