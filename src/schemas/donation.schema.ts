@@ -58,6 +58,9 @@ export class Donation {
     @Prop({required:true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
     user: User | mongoose.Types.ObjectId;
 
+    @Prop({default: new Date()})
+    created_at: Date
+
 }
 
 export const DonationSchema = SchemaFactory.createForClass(Donation);

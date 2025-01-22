@@ -36,7 +36,9 @@ export class DonationService {
     async get_all_donations(page_no: number) {
         try {
             const skip = (page_no - 1) * DEFAULT_DOCUMENTS_LIMIT;
-            return await this.donation_model.find({}).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            const donations = await this.donation_model.find({}).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            const total =  await this.donation_model.countDocuments({}).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            return {donations, total}
         } catch (e) {
             console.log(e)
             throw new InternalServerErrorException(e)
@@ -66,7 +68,9 @@ export class DonationService {
     async get_all_user_donations(user_id: string, page_no: number) {
         try {
             const skip = (page_no - 1) * DEFAULT_DOCUMENTS_LIMIT;
-            return await this.donation_model.find({ user: new Types.ObjectId(user_id) }).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            const donations = await this.donation_model.find({ user: new Types.ObjectId(user_id) }).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            const total = await this.donation_model.countDocuments({ user: new Types.ObjectId(user_id) })
+            return { donations, total }
         } catch (e) {
             console.log(e)
             throw new InternalServerErrorException(e)
@@ -77,14 +81,14 @@ export class DonationService {
     async get_all_ngo_donations(ngo_id: string, page_no: number) {
         try {
             const skip = (page_no - 1) * DEFAULT_DOCUMENTS_LIMIT;
-            return await this.donation_model.find({ selected_ngo: new Types.ObjectId(ngo_id) }).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            const total = await this.donation_model.countDocuments({ selected_ngo: new Types.ObjectId(ngo_id) })
+            const donations = await this.donation_model.find({ selected_ngo: new Types.ObjectId(ngo_id) }).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            return { donations, total }
         } catch (e) {
             console.log(e)
             throw new InternalServerErrorException(e)
         }
     }
-
-
 
 }
 

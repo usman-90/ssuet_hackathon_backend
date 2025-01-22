@@ -65,9 +65,16 @@ export class DonationController {
     }
 
     @HttpCode(HttpStatus.OK)
-    @Get('get_all_user_donations')
+    @Get('get_all_ngo_donations')
     get_all_ngo_donation(@Query("page_no") page_no: number, @Query("ngo_id") ngo_id : string) {
         return this.donation_service.get_all_ngo_donations(ngo_id, page_no)
     }
+
+    @HttpCode(HttpStatus.OK)
+    @Get('admin/get_all_user_donations')
+    get_all_user_donation_admin(@Query("page_no") page_no: number,@Query("user_id") user_id:string) {
+        return this.donation_service.get_all_user_donations(user_id, page_no)
+    }
+
 
 }
