@@ -23,7 +23,7 @@ export class UserController {
     }
 
     @HttpCode(HttpStatus.OK)
-    @Put('get_one_by_id')
+    @Put('update_one_by_id')
     update_ngo_by_id(@Query("email") email: string, dto: UpdateUserDtoClient) {
         return this.user_service.update_one_by_email(email, dto)
     }
