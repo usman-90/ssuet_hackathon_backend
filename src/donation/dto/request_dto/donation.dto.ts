@@ -9,20 +9,16 @@ import { Coordinates } from 'src/commons/common.class';
 import { DonationItems } from 'src/schemas/donation.schema';
 
 export class CreateDonationDto {
-    @IsNotEmpty()
+    /*
+    * address me address ki string bhi bhej skte hen
+    *
+    */
     address: string | Coordinates;
 
-    @IsString()
-    donation_mechanism: string
-
-    @IsString()
-    donation_mechanism_type: string
-
-    @Type(() => DonationItems)
     donation_items: DonationItems
 
-    @IsDate()
-    pickup_date: Date
+    @IsString()
+    pickup_date: string
 
     @IsString()
     pickup_time_slot: string

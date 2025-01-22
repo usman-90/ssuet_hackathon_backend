@@ -9,9 +9,9 @@ import { DEFAULT_DOCUMENTS_LIMIT } from 'src/constants';
 export class DonationService {
     constructor(@InjectModel(Donation.name) private donation_model: Model<Donation>) { }
 
-    create(dto: CreateDonationDto) {
+    async create(dto: CreateDonationDto) {
         const created_don = new this.donation_model(dto);
-        return created_don.save();
+        return await created_don.save();
     }
 
     async update(dto: UpdateDonationDto, id: Types.ObjectId) {
@@ -33,10 +33,10 @@ export class DonationService {
         }
     }
 
-    async get_all_donations(page_no: number, dto?: UpdateDonationDto) {
+    async get_all_donations(page_no: number) {
         try {
             const skip = (page_no - 1) * DEFAULT_DOCUMENTS_LIMIT;
-            return await this.donation_model.find({ dto }).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            return await this.donation_model.find({}).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
         } catch (e) {
             console.log(e)
             throw new InternalServerErrorException(e)
@@ -53,6 +53,25 @@ export class DonationService {
         }
     }
 
+    async get_donation_by_user_id(id: string, user_id: string) {
+        try {
+            return await this.donation_model.findOne({ _id: new Types.ObjectId(id), user: new Types.ObjectId(user_id) })
+        } catch (e) {
+            console.log(e)
+            throw new InternalServerErrorException(e)
+        }
+    }
+
+
+    async get_all_user_donations(user_id: string, page_no: number) {
+        try {
+            const skip = (page_no - 1) * DEFAULT_DOCUMENTS_LIMIT;
+            return await this.donation_model.find({ user: new Types.ObjectId(user_id) }).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+        } catch (e) {
+            console.log(e)
+            throw new InternalServerErrorException(e)
+        }
+    }
 
 }
 
