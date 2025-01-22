@@ -5,7 +5,6 @@ import { isMongoId } from 'class-validator';
 import { Types } from 'mongoose';
 import { ApiTags } from '@nestjs/swagger';
 
-@UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('NGO')
 @Controller('ngo')
 export class NgoController {
@@ -43,6 +42,13 @@ export class NgoController {
     @Get('get_all')
     get_all_ngos(@Query("page_no") page_no: number, @Query() q?: UpdateNGODtoClient) {
         return this.ngo_service.get_all_ngos(page_no, q)
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Get('get_ngo_dashboard_data')
+    some(@Query("month") month: number, @Query("year") year: number, @Query("ngo_id") ngo_id: string) {
+        if (!isMongoId(ngo_id)) throw new BadRequestException("invalid mongo id")
+        return this.ngo_service.get_ngo_dashboard_data(month, year, ngo_id)
     }
 
 }

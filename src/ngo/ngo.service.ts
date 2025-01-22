@@ -5,10 +5,11 @@ import { NGO } from 'src/schemas/ngo/ngo.schema';
 import { Model, Types } from 'mongoose';
 import { hashPassword } from 'src/utils/data.encryption';
 import { DEFAULT_DOCUMENTS_LIMIT } from 'src/constants';
+import { Donation, DONATION_STATUS } from 'src/schemas/donation.schema';
 
 @Injectable()
 export class NgoService {
-    constructor(@InjectModel(NGO.name) private ngo_model: Model<NGO>) { }
+    constructor(@InjectModel(NGO.name) private ngo_model: Model<NGO>, @InjectModel(Donation.name) private donation_model: Model<Donation>) { }
 
     create(dto: CreateNgoDto) {
         const created_ngo = new this.ngo_model(dto);
@@ -65,6 +66,36 @@ export class NgoService {
             console.log(e)
             throw new InternalServerErrorException(e)
         }
+    }
+
+    async get_ngo_dashboard_data(
+        month: number,
+        year: number,
+        ngo_id: string
+    ) {
+        let startOfMonth = new Date(Date.UTC(year, month, 1)); // Start of the month
+        let startOfNextMonth = new Date(Date.UTC(year, month + 1, 1)); // Start of the next month
+
+        const total_donation = await this.donation_model
+            .countDocuments({
+                _id: new Types.ObjectId(ngo_id),
+                created_at: {
+                    $gte: startOfMonth,
+                    $lt: startOfNextMonth,
+                },
+            })
+            .exec();
+        const active_donations = await this.donation_model
+            .countDocuments({
+                _id: new Types.ObjectId(ngo_id),
+                $or: [
+                    { status: DONATION_STATUS.PENDING },
+                    { status: DONATION_STATUS.PICKED_UP}
+                ]
+            })
+            .exec();
+
+            return {total_donation, active_donations}
     }
 
 }

@@ -20,6 +20,7 @@ import { DonationModule } from './donation/donation.module';
 import { AdminModule } from './admin/admin.module';
 import { AdminService } from './admin/admin.service';
 import { Admin, AdminSchema } from './schemas/admin.schema';
+import { Donation, DonationSchema } from './schemas/donation.schema';
 
 @Module({
     imports: [
@@ -40,6 +41,7 @@ import { Admin, AdminSchema } from './schemas/admin.schema';
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
         MongooseModule.forFeature([{ name: NGO.name, schema: NGOSchema }]),
         MongooseModule.forFeature([{ name: Admin.name, schema: AdminSchema}]),
+        MongooseModule.forFeature([{ name: Donation.name, schema: DonationSchema}]),
         AuthModule,
         NotificationsModule,
         UserModule,
