@@ -10,11 +10,11 @@ import { comparePassword, hashPassword } from 'src/utils/data.encryption'
 import { UserResponseDto } from './dtos/responseDtos/userResponse.dto'
 import { GetOtpResponseDto } from './dtos/responseDtos/getOtpResponse.dto'
 import { generateOTP } from 'src/utils/otp.generator'
-import { NotificationsService } from 'notifications/notifications.service'
-import { EmailTransporter } from 'notifications/classes/transporter.class'
+import { NotificationsService } from 'src/notifications/notifications.service'
+import { EmailTransporter } from 'src/notifications/classes/transporter.class'
 import { SendMailOptions } from 'nodemailer'
 import * as ejs from 'ejs'
-import { forget_password_otp_template, otpTemplate } from 'notifications/templates/otp.template'
+import { forget_password_otp_template, otpTemplate } from 'src/notifications/templates/otp.template'
 import { SignUpResponseDto } from './dtos/responseDtos/signupResponse.dto'
 import { VerifyEmailByOtpResponse } from './dtos/responseDtos/verifyOtpResponse.dto'
 import { EmailVerificationStatus, OtpStatus } from './auth.enums'
@@ -22,7 +22,7 @@ import { SuccessResDto } from 'src/commons/dtos/response_dtos/success.dto'
 import { UserPayload } from './interfaces/user_payload.interface'
 import { UserService } from 'src/user/user.service'
 import { ResetPasswordPayload } from './types/reset_password.types'
-import { OrganizationPayload } from './types/organization_payload.types'
+import { RedisConnector } from 'src/database/redisConnector.database'
 
 @Injectable()
 export class AuthService {
@@ -66,13 +66,12 @@ export class AuthService {
 
   async userSignIn(email: string, pass: string): Promise<UserResponseDto> {
     try {
-      const userRow = await this.user_repository.find_one_by_email(email)
+      const user = await this.user_service.find_one_by_email(email)
 
-      if (!userRow.length) {
+      if (!user) {
         throw new BadRequestException('Incorrect email or password')
       }
 
-      const user = userRow[0]
 
       const isPasswordValid = await comparePassword(pass, user.password)
 
@@ -81,9 +80,8 @@ export class AuthService {
       }
 
       const payload: UserPayload = {
-        id: user.id,
+        id: user._id,
         email: user.email,
-        username: user.username,
       }
 
       const token = await this.jwtService.signAsync(payload)
@@ -100,14 +98,12 @@ export class AuthService {
     expires_in: number = 600,
   ): Promise<GetOtpResponseDto> {
     try {
-      const user_row = await this.user_repository.find_one_by_email(email)
-      if (!user_row.length) {
+      const user = await this.user_service.find_one_by_email(email)
+      if (!user) {
         throw new BadRequestException('User does not exist with this email.')
       }
 
-      const user = user_row[0]
-
-      if (user.is_email_verified === SqLiteBoolean.TRUE) {
+      if (user.is_email_verified === true) {
         throw new BadRequestException('User is already verified!')
       }
 
@@ -122,7 +118,7 @@ export class AuthService {
       const options: SendMailOptions = {
         from: transporter.email,
         to: email,
-        subject: 'FLINT: Verify you account',
+        subject: 'Heart Hand: Verify you account',
         html: ejs.render(otpTemplate(name || 'User', otp, expires_in)),
       }
       await this.notificationService.sendMail(options, transporter.defaultTransporter)
@@ -138,8 +134,8 @@ export class AuthService {
     expires_in: number = 600,
   ): Promise<GetOtpResponseDto> {
     try {
-      const user_row = await this.user_repository.find_one_by_email(email)
-      if (!user_row.length) {
+      const user = await this.user_service.find_one_by_email(email)
+      if (!user) {
         throw new BadRequestException('User does not exist with this email.')
       }
 
@@ -154,7 +150,7 @@ export class AuthService {
       const options: SendMailOptions = {
         from: transporter.email,
         to: email,
-        subject: 'FLINT: Verify you account',
+        subject: 'Heart Hand: Verify you account',
         html: ejs.render(forget_password_otp_template(name || 'User', otp, expires_in)),
       }
       await this.notificationService.sendMail(options, transporter.defaultTransporter)
@@ -208,8 +204,8 @@ export class AuthService {
         const reset_password_token = await this.jwtService.signAsync(reset_password_payload, {
           expiresIn: '3600s',
         })
-        await this.user_repository.update_one_by_email(email, {
-          is_email_verified: SqLiteBoolean.TRUE,
+        await this.user_service.update_one_by_email(email, {
+          is_email_verified: true
         })
         return new VerifyEmailByOtpResponse({
           status: EmailVerificationStatus.VERIFIED,
@@ -244,7 +240,7 @@ export class AuthService {
       if (password !== confirm_password) throw new BadRequestException('passwords dont match')
 
       const hashed_password = await hashPassword(password)
-      this.user_repository.update_one_by_email(email, {
+      this.user_service.update_one_by_email(email, {
         password: hashed_password,
       })
 
@@ -254,36 +250,4 @@ export class AuthService {
     }
   }
 
-  async signin_organization(user_id: number, organization_id: number): Promise<string> {
-    if (!organization_id) {
-      throw new BadRequestException('Organization Id Is Required')
-    }
-    const employee_row = await this.organization_repository.get_one_organization_employee_by_ids(
-      organization_id,
-      user_id,
-    )
-    const joined = employee_row.length ? true : false
-
-    if (!joined) {
-      throw new UnauthorizedException('User is not part of the organization')
-    }
-
-    const employee = employee_row[0]
-
-    const privilages_row = await this.roles_service.get_previleges_by_employee_id(employee.id)
-    const privilages = privilages_row.map(prev => prev.privilage_name)
-
-    if (employee.designation === DefaultDesignation.OWNER) {
-      privilages.push(DefaultDesignation.OWNER)
-    }
-
-    const payload: OrganizationPayload = {
-      employee_id: employee.id,
-      organization_id,
-      privilages,
-    }
-    const token = await this.jwtService.signAsync(payload)
-
-    return token
-  }
 }

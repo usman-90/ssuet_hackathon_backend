@@ -1,23 +1,22 @@
-// @ts-nocheck
-import { ApiProperty } from '@nestjs/swagger'
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
+import { IsEmail, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator'
 
 export class SignUpDto {
-  @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  first_name: string
-
-  @IsNotEmpty()
-  @IsString()
-  last_name: string
+  name: string
 
   @IsEmail()
   email: string
 
   @IsString()
   @IsNotEmpty()
-  username: string
+  country: string
+
+  @IsNotEmpty()
+  @IsInt()
+  @Min(3)
+  @Max(150)
+  age: number
 
   @IsNotEmpty()
   @IsString()

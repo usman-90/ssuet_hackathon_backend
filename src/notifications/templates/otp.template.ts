@@ -1,5 +1,3 @@
-import { websiteUrl } from 'src/constants/website.constants'
-
 export const forget_password_otp_template = (name: string, otp: string, expiresIn: number) => {
   return `
 <!DOCTYPE html>
@@ -75,7 +73,7 @@ export const forget_password_otp_template = (name: string, otp: string, expiresI
     </div>
     <div class="footer">
       <p>&copy; 2024 Your Company. All rights reserved.</p>
-      <p><a href=${websiteUrl}>Visit our website</a></p>
+      <p><a href="www.google.com">Visit our website</a></p>
     </div>
   </div>
 </body>
@@ -158,7 +156,7 @@ export const otpTemplate = (name: string, otp: string, expiresIn: number) => {
     </div>
     <div class="footer">
       <p>&copy; 2024 Your Company. All rights reserved.</p>
-      <p><a href=${websiteUrl}>Visit our website</a></p>
+      <p><a href="www.google.com">Visit our website</a></p>
     </div>
   </div>
 </body>
