@@ -27,6 +27,7 @@ import { UserService } from 'src/user/user.service';
 import { ResetPasswordPayload } from './types/reset_password.types';
 import { RedisConnector } from 'src/database/redisConnector.database';
 import { AdminService } from 'src/admin/admin.service';
+import { NgoService } from 'src/ngo/ngo.service';
 
 @Injectable()
 export class AuthService {
@@ -35,6 +36,7 @@ export class AuthService {
         private jwtService: JwtService,
         private notificationService: NotificationsService,
         private admin_service: AdminService,
+        private ngo_service: NgoService,
     ) { }
 
     async userSignUp(signUpDto: CreateUserDto): Promise<SignUpResponseDto> {
@@ -351,6 +353,34 @@ export class AuthService {
     }
 
 
+    async ngo_signin(email: string, pass: string) {
+        try {
+            const user = await this.ngo_service.get_ngo_by_email(email);
+
+            if (!user) {
+                throw new BadRequestException('Incorrect email or password');
+            }
+
+            const isPasswordValid = await comparePassword(pass, user.password);
+
+            if (!isPasswordValid) {
+                throw new BadRequestException('Incorrect email or password');
+            }
+
+            const payload: AdminPaylaod = {
+                id: user._id.toString(),
+                email: user.email,
+            };
+
+            const token = await this.jwtService.signAsync(payload, {
+                secret: process.env.JWT_SECRET,
+            });
+
+            return new UserResponseDto({ token, user });
+        } catch (e) {
+            throw new InternalServerErrorException(e);
+        }
+    }
 
 
 

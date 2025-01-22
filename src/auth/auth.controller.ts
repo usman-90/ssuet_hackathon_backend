@@ -23,10 +23,16 @@ import { CreateAdminDto, CreateUserDto } from './dtos/requestDtos/signup.dto';
 export class AuthController {
     constructor(private authService: AuthService) { }
 
+    @HttpCode(HttpStatus.OK)
+    @Post('ngo/signin')
+    ngo_signin(@Body() signInDto: SignInDto) {
+        return this.authService.ngo_signin(signInDto.email, signInDto.password);
+    }
 
     @HttpCode(HttpStatus.OK)
     @Post('admin/signin')
     adminsignIn(@Body() signInDto: SignInDto) {
+        console.log(signInDto)
         return this.authService.admin_signin(signInDto.email, signInDto.password);
     }
 

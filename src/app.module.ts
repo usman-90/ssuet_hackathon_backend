@@ -21,6 +21,7 @@ import { AdminModule } from './admin/admin.module';
 import { AdminService } from './admin/admin.service';
 import { Admin, AdminSchema } from './schemas/admin.schema';
 import { Donation, DonationSchema } from './schemas/donation.schema';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
     imports: [
@@ -40,8 +41,8 @@ import { Donation, DonationSchema } from './schemas/donation.schema';
         ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
         MongooseModule.forFeature([{ name: NGO.name, schema: NGOSchema }]),
-        MongooseModule.forFeature([{ name: Admin.name, schema: AdminSchema}]),
-        MongooseModule.forFeature([{ name: Donation.name, schema: DonationSchema}]),
+        MongooseModule.forFeature([{ name: Admin.name, schema: AdminSchema }]),
+        MongooseModule.forFeature([{ name: Donation.name, schema: DonationSchema }]),
         AuthModule,
         NotificationsModule,
         UserModule,
@@ -57,7 +58,7 @@ import { Donation, DonationSchema } from './schemas/donation.schema';
         UserService,
         JwtService,
         NgoService,
-        AdminService
+        AdminService,
     ],
 })
 export class AppModule { }

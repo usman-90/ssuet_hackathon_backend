@@ -58,6 +58,14 @@ export class NgoService {
         }
     }
 
+    async get_ngo_by_email(email: string) {
+        try {
+            return await this.ngo_model.findOne({ email })
+        } catch (e) {
+            console.log(e)
+            throw new InternalServerErrorException(e)
+        }
+    }
 
     async get_ngo_by_id(id: string) {
         try {
