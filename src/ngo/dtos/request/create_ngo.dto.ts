@@ -35,7 +35,6 @@ export class CreateNgoDto{
 
     @IsString()
     password: string;
-
 }
 
 export class UpdateNGODtoClient extends PartialType(
