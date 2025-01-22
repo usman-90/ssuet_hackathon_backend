@@ -1,29 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, SchemaTypes } from 'mongoose';
-import { Coordinates } from 'src/commons/common.class';
-import { IsString } from 'class-validator';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from './user_panel/user.schema';
+import { NGO } from './ngo/ngo.schema';
 
 export type DonationDocument = HydratedDocument<Donation>;
 
-export class DonationMechanism {
-    @IsString()
-    donation_mechanism: string
-    @IsString()
-    donation_mechanism_type: string
-}
-
-export class DonationItems {
-    clothes: number
-    footwear: number
-    stationery: number
-    toys: number
-    books: number
-    clean_hygiene: number
-    sanitizer_masks: number
-    essential_staples: number
-    packaged_goods: number
-    baby_care: number
+export enum DONATION_TYPE{
+    DISPOSE_CLOTHE="donation",
+    DONATE_CLOTHES="donate"
 }
 
 export enum DONATION_STATUS{
@@ -34,25 +18,41 @@ export enum DONATION_STATUS{
 
 @Schema()
 export class Donation {
-    @Prop({ required: true, type: SchemaTypes.Mixed})
-    address: string | Coordinates
+    @Prop({ required: true, type: String})
+    address: string 
 
     @Prop({required: true})
-    donation_items : DonationItems
+    donation_type: DONATION_TYPE
 
     @Prop({required: true})
-    pickup_date:string
+    item_type:string
+
 
     @Prop({required: true})
-    pickup_time_slot:string
+    quantity:number
 
     @Prop({required: true})
-    pickup_notes:string
+    description:string
 
     @Prop({required: true})
-    promo_code:string
+    condition:string
 
-    @Prop({required: true, type:String})
+    @Prop({required: true, type: mongoose.Schema.Types.ObjectId , ref:"NGO"})
+    selected_ngo:NGO | mongoose.Types.ObjectId
+
+    @Prop({required: true})
+    selected_range:string
+
+    @Prop({required: true})
+    start_date:string
+
+    @Prop({required: true})
+    end_date:string
+
+    @Prop({required: true})
+    notes:string
+
+    @Prop({required: true, type:String, default: DONATION_STATUS.PENDING})
     status:DONATION_STATUS
 
     @Prop({required:true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })

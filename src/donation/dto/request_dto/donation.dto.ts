@@ -1,33 +1,48 @@
 import { PartialType } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import {
-    IsDate,
-    IsNotEmpty,
+    IsEnum,
+    IsInt,
+    IsMongoId,
+    IsOptional,
     IsString,
 } from 'class-validator';
-import { Coordinates } from 'src/commons/common.class';
-import { DonationItems } from 'src/schemas/donation.schema';
+import { DONATION_TYPE } from 'src/schemas/donation.schema';
 
 export class CreateDonationDto {
-    /*
-    * address me address ki string bhi bhej skte hen
-    *
-    */
-    address: string | Coordinates;
+    @IsString()
+    address: string 
 
-    donation_items: DonationItems
+    @IsEnum(DONATION_TYPE)
+    @IsString()
+    donation_type: DONATION_TYPE
 
     @IsString()
-    pickup_date: string
+    item_type:string
+
+    @IsInt()
+    quantity:number
 
     @IsString()
-    pickup_time_slot: string
+    description:string
 
     @IsString()
-    pickup_notes: string
+    condition:string
+
+    @IsMongoId()
+    selected_ngo: string
 
     @IsString()
-    promo_code: string
+    selected_range:string
+
+    @IsString()
+    start_date:string
+
+    @IsString()
+    end_date:string
+
+    @IsOptional()
+    @IsString()
+    notes:string
 }
 
 export class UpdateDonationDto extends PartialType(CreateDonationDto) { }

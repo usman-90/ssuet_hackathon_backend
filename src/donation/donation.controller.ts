@@ -3,7 +3,7 @@ import { isMongoId } from 'class-validator';
 import { Types } from 'mongoose';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { DonationService } from './donation.service';
-import {  UpdateDonationDto } from './dto/request_dto/donation.dto';
+import {  CreateDonationDto, UpdateDonationDto } from './dto/request_dto/donation.dto';
 import { UserPayloadRequest } from 'src/commons/interfaces/user_payload_request.interface';
 import { AuthGuard } from 'src/auth/auth.guard';
 
@@ -17,13 +17,10 @@ export class DonationController {
     @UseGuards(AuthGuard)
     @HttpCode(HttpStatus.OK)
     @Post('create')
-    create_donation(@Body() d: any, @Req() req: UserPayloadRequest) {
-        console.log(d)
+    create_donation(@Body() d: CreateDonationDto, @Req() req: UserPayloadRequest) {
         return this.donation_service.create({ user: new Types.ObjectId(req.user.id), ...d })
     }
 
-    @ApiBearerAuth()
-    @UseGuards(AuthGuard)
     @HttpCode(HttpStatus.OK)
     @Post('update')
     update_donation(@Body() d: UpdateDonationDto, @Query("id") id: string) {
@@ -31,8 +28,6 @@ export class DonationController {
         return this.donation_service.update(d, new Types.ObjectId(id))
     }
 
-    @ApiBearerAuth()
-    @UseGuards(AuthGuard)
     @HttpCode(HttpStatus.OK)
     @Delete('delete')
     delete_ngo(@Query("id") id: string) {
@@ -40,8 +35,6 @@ export class DonationController {
         return this.donation_service.delete_donation_by_id(new Types.ObjectId(id))
     }
 
-    @ApiBearerAuth()
-    @UseGuards(AuthGuard)
     @HttpCode(HttpStatus.OK)
     @Get('get_one_by_id')
     get_ngo_by_id(@Query("id") id: string) {
@@ -49,8 +42,6 @@ export class DonationController {
         return this.donation_service.get_donation_by_id(id)
     }
 
-    @ApiBearerAuth()
-    @UseGuards(AuthGuard)
     @HttpCode(HttpStatus.OK)
     @Get('get_all')
     get_all_ngos(@Query("page_no") page_no: number) {
@@ -71,6 +62,12 @@ export class DonationController {
     @Get('get_user_donation_by_id')
     get_user_donation_by_id(@Query("donation_id") id: string, @Req() req: UserPayloadRequest) {
         return this.donation_service.get_donation_by_user_id(id, req.user.id)
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Get('get_all_user_donations')
+    get_all_ngo_donation(@Query("page_no") page_no: number, @Query("ngo_id") ngo_id : string) {
+        return this.donation_service.get_all_ngo_donations(ngo_id, page_no)
     }
 
 }

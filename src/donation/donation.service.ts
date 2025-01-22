@@ -9,7 +9,7 @@ import { DEFAULT_DOCUMENTS_LIMIT } from 'src/constants';
 export class DonationService {
     constructor(@InjectModel(Donation.name) private donation_model: Model<Donation>) { }
 
-    async create(dto: CreateDonationDto) {
+    async create(dto: any) {
         const created_don = new this.donation_model(dto);
         return await created_don.save();
     }
@@ -72,6 +72,19 @@ export class DonationService {
             throw new InternalServerErrorException(e)
         }
     }
+
+
+    async get_all_ngo_donations(ngo_id: string, page_no: number) {
+        try {
+            const skip = (page_no - 1) * DEFAULT_DOCUMENTS_LIMIT;
+            return await this.donation_model.find({ selected_ngo: new Types.ObjectId(ngo_id) }).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+        } catch (e) {
+            console.log(e)
+            throw new InternalServerErrorException(e)
+        }
+    }
+
+
 
 }
 
