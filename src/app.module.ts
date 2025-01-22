@@ -12,6 +12,8 @@ import { UserService } from './user/user.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { User, UserSchema } from './schemas/user_panel/user.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { NgoController } from './ngo/ngo.controller';
+import { NgoModule } from './ngo/ngo.module';
 
 @Module({
     imports: [
@@ -33,8 +35,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         AuthModule,
         NotificationsModule,
         UserModule,
+        NgoModule,
     ],
-    controllers: [AppController, AuthController],
+    controllers: [AppController, AuthController, NgoController],
     providers: [
         AppService,
         NotificationsService,
