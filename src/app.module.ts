@@ -14,6 +14,8 @@ import { User, UserSchema } from './schemas/user_panel/user.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NgoController } from './ngo/ngo.controller';
 import { NgoModule } from './ngo/ngo.module';
+import { NgoService } from './ngo/ngo.service';
+import { NGO, NGOSchema } from './schemas/ngo/ngo.schema';
 
 @Module({
     imports: [
@@ -32,6 +34,7 @@ import { NgoModule } from './ngo/ngo.module';
         }),
         ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+        MongooseModule.forFeature([{ name: NGO.name, schema: NGOSchema }]),
         AuthModule,
         NotificationsModule,
         UserModule,
@@ -44,6 +47,7 @@ import { NgoModule } from './ngo/ngo.module';
         AuthService,
         UserService,
         JwtService,
+        NgoService
     ],
 })
 export class AppModule { }

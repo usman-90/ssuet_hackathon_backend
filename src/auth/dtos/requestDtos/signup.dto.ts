@@ -36,6 +36,7 @@ export class CreateUserDto {
 export class UpdateUserDtoClient extends PartialType(
   OmitType(CreateUserDto, ['password'] as const),
 ) {}
+
 export class UpdateUserDtoDB extends PartialType(CreateUserDto) {
   @IsBoolean()
   @IsOptional()
