@@ -37,8 +37,8 @@ export class DonationService {
         try {
             const skip = (page_no - 1) * DEFAULT_DOCUMENTS_LIMIT;
             const donations = await this.donation_model.find({}).populate(["user", "selected_ngo"]).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
-            const total =  await this.donation_model.countDocuments({}).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
-            return {donations, total}
+            const total = await this.donation_model.countDocuments({}).skip(skip).limit(DEFAULT_DOCUMENTS_LIMIT)
+            return { donations, total }
         } catch (e) {
             console.log(e)
             throw new InternalServerErrorException(e)
@@ -77,6 +77,23 @@ export class DonationService {
         }
     }
 
+    async get_donation_no_by_status() {
+        try {
+            const donations = await this.donation_model.aggregate([
+                {
+                    $group: {
+                        _id: "$status",
+                        count: { $sum: 1 }
+                    }
+                }
+            ])
+
+            return { donations }
+        } catch (e) {
+            console.log(e)
+            throw new InternalServerErrorException(e)
+        }
+    }
 
     async get_all_ngo_donations(ngo_id: string, page_no: number) {
         try {

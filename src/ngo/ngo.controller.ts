@@ -13,7 +13,7 @@ export class NgoController {
 
     @HttpCode(HttpStatus.OK)
     @Post('create')
-    create_ngo(@Body() ngo:any) {
+    create_ngo(@Body() ngo: any) {
         return this.ngo_service.create_s(ngo)
     }
 
@@ -50,5 +50,17 @@ export class NgoController {
         if (!isMongoId(ngo_id)) throw new BadRequestException("invalid mongo id")
         return this.ngo_service.get_ngo_dashboard_data(month, year, ngo_id)
     }
+
+
+    @HttpCode(HttpStatus.OK)
+    @Get('get_admin_dashboard_data')
+    async asd(@Query("month") month: number, @Query("year") year: number) {
+        const donation_data = await this.ngo_service.get_donation_dashboard_data(month, year)
+        const ngo_data = await this.ngo_service.get_all_ngo_dashboard_data(month, year)
+        const user_data = await this.ngo_service.get_all_user_dashboard_data(month, year)
+
+        return { donation_data, ngo_data, user_data }
+    }
+
 
 }

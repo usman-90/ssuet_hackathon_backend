@@ -76,5 +76,10 @@ export class DonationController {
         return this.donation_service.get_all_user_donations(user_id, page_no)
     }
 
+    @HttpCode(HttpStatus.OK)
+    @Get('get_donation_no_by_status')
+    siasodfn() {
+        return this.donation_service.get_donation_no_by_status()
+    }
 
 }

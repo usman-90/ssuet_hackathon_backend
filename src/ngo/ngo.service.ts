@@ -6,10 +6,11 @@ import { Model, Types } from 'mongoose';
 import { hashPassword } from 'src/utils/data.encryption';
 import { DEFAULT_DOCUMENTS_LIMIT } from 'src/constants';
 import { Donation, DONATION_STATUS } from 'src/schemas/donation.schema';
+import { User } from 'src/schemas/user_panel/user.schema';
 
 @Injectable()
 export class NgoService {
-    constructor(@InjectModel(NGO.name) private ngo_model: Model<NGO>, @InjectModel(Donation.name) private donation_model: Model<Donation>) { }
+    constructor(@InjectModel(NGO.name) private ngo_model: Model<NGO>, @InjectModel(Donation.name) private donation_model: Model<Donation>, @InjectModel(User.name) private user_model: Model<User>) { }
 
     create(dto: CreateNgoDto) {
         const created_ngo = new this.ngo_model(dto);
@@ -75,6 +76,81 @@ export class NgoService {
             throw new InternalServerErrorException(e)
         }
     }
+
+
+    async get_all_ngo_dashboard_data(
+        month: number,
+        year: number,
+    ) {
+        let startOfMonth = new Date(Date.UTC(year, month, 1)); // Start of the month
+        let startOfNextMonth = new Date(Date.UTC(year, month + 1, 1)); // Start of the next month
+
+        const total_donation = await this.ngo_model
+            .countDocuments({
+                created_at: {
+                    $gte: startOfMonth,
+                    $lt: startOfNextMonth,
+                },
+            })
+            .exec();
+        const active_donations = await this.ngo_model
+            .countDocuments({ })
+            .exec();
+
+            return {this_month: total_donation , total_ngos: active_donations}
+    }
+
+
+
+    async get_all_user_dashboard_data(
+        month: number,
+        year: number,
+    ) {
+        let startOfMonth = new Date(Date.UTC(year, month, 1)); // Start of the month
+        let startOfNextMonth = new Date(Date.UTC(year, month + 1, 1)); // Start of the next month
+
+        const total_donation = await this.user_model
+            .countDocuments({
+                created_at: {
+                    $gte: startOfMonth,
+                    $lt: startOfNextMonth,
+                },
+            })
+            .exec();
+        const active_donations = await this.user_model
+            .countDocuments({ })
+            .exec();
+
+            return {this_month: total_donation , total_users: active_donations}
+    }
+
+    async get_donation_dashboard_data(
+        month: number,
+        year: number,
+    ) {
+        let startOfMonth = new Date(Date.UTC(year, month, 1)); // Start of the month
+        let startOfNextMonth = new Date(Date.UTC(year, month + 1, 1)); // Start of the next month
+
+        const total_donation = await this.donation_model
+            .countDocuments({
+                created_at: {
+                    $gte: startOfMonth,
+                    $lt: startOfNextMonth,
+                },
+            })
+            .exec();
+        const active_donations = await this.donation_model
+            .countDocuments({
+                $or: [
+                    { status: DONATION_STATUS.PENDING },
+                    { status: DONATION_STATUS.PICKED_UP}
+                ]
+            })
+            .exec();
+
+            return {total_donation, active_donations}
+    }
+
 
     async get_ngo_dashboard_data(
         month: number,
